@@ -14,6 +14,10 @@
 
     UI.init();
     Settings.init();
+    (function () {
+        var lb = (window.LAUNCHER_CONFIG || {}).longBackToSamsungHome || {};
+        if (lb.enabled !== false) UI.setLongBack(Settings.openSamsungHome, lb.holdMs);
+    })();
     Screensaver.init();
     Weather.start();
     Home.init();

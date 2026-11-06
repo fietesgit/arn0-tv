@@ -35,6 +35,13 @@ window.LAUNCHER_CONFIG = {
     //   'inapp'          show the input full screen inside the launcher (Back returns)
     inputMethod: 'switch+viewer',
 
+    /*
+     * Holding Back opens Samsung's own Home (Smart Hub, TV settings). A short press stays a
+     * normal Back inside the launcher. Set enabled: false to turn it off; holdMs is how long
+     * Back must be held.
+     */
+    longBackToSamsungHome: { enabled: true, holdMs: 800 },
+
     locale: 'en-GB',
 
     theme: {

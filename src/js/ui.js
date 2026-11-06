@@ -208,8 +208,62 @@
     var keyHook = null;   // e.g. HDMI shown inside the launcher swallows keys
     var colourKey = null; // global shortcuts
 
+    /*
+     * Long press on Back (Esc/Backspace in the preview) runs `longBack` instead of a normal Back,
+     * e.g. to open Samsung's own Home. A press counts as long once it has been held for
+     * LONG_BACK_MS; a shorter press runs the normal Back on key-up. Auto-repeat keydowns while the
+     * key is held are swallowed so Back does not fire several times.
+     */
+    var longBack = null;
+    var LONG_BACK_MS = 800;
+    var backPress = null; // { code, timer, fired }
+
+    function isBack(k) { return k === KEY.BACK || k === KEY.ESC || k === KEY.BACKSPACE; }
+
+    function onBackDown(e) {
+        e.preventDefault();
+        if (backPress) return; // auto-repeat while held
+        var press = { code: e.keyCode, fired: false, timer: null };
+        press.timer = setTimeout(function () {
+            press.fired = true;
+            if (window.Sound) Sound.play('move');
+            longBack();
+        }, LONG_BACK_MS);
+        backPress = press;
+    }
+
+    function onKeyUp(e) {
+        if (!backPress || e.keyCode !== backPress.code) return;
+        var press = backPress;
+        backPress = null;
+        clearTimeout(press.timer);
+        e.preventDefault();
+        if (!press.fired) handleKey(press.code, e);
+    }
+
+    // A long press that never sees its key-up (app hidden mid-press) must not stay armed.
+    function cancelBackPress() {
+        if (!backPress) return;
+        clearTimeout(backPress.timer);
+        backPress = null;
+    }
+
     function onKey(e) {
         var k = e.keyCode;
+        // Text fields keep Backspace; the view's onKey decides with 'pass'.
+        if (longBack && isBack(k) && !isTyping()) {
+            onBackDown(e);
+            return;
+        }
+        handleKey(k, e);
+    }
+
+    function isTyping() {
+        var a = document.activeElement;
+        return !!a && (a.tagName === 'INPUT' || a.tagName === 'TEXTAREA');
+    }
+
+    function handleKey(k, e) {
         if (keyHook && keyHook(k)) {
             e.preventDefault();
             return;
@@ -271,6 +325,10 @@
             }
         });
         document.addEventListener('keydown', onKey);
+        document.addEventListener('keyup', onKeyUp);
+        document.addEventListener('visibilitychange', function () {
+            if (document.hidden) cancelBackPress();
+        });
     }
 
     window.UI = {
@@ -295,6 +353,11 @@
         current: function () { return current; },
         isVisible: function (name) { return current === name; },
         setKeyHook: function (fn) { keyHook = fn; },
-        setColourKey: function (fn) { colourKey = fn; }
+        setColourKey: function (fn) { colourKey = fn; },
+        // fn() runs on a long press of Back; ms optionally overrides the hold time.
+        setLongBack: function (fn, ms) {
+            longBack = fn;
+            if (ms) LONG_BACK_MS = ms;
+        }
     };
 })();
