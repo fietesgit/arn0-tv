@@ -12,22 +12,18 @@
  * inputs: HDMI ports shown in the second row. Set `hdmi` to the port each device is plugged into.
  */
 window.LAUNCHER_CONFIG = {
+    // Starting set; change it on the TV under Settings → Apps on Home.
     apps: [
-        { id: 'xvvl3S1TT1.TizenTubeStandalone', label: 'YouTube', brand: 'youtube' },
-        { id: 'rJeHak5zRg.Spotify', label: 'Spotify' },
-        { id: 'Jz7aUrV2Q4.Twitch', label: 'Twitch' },
-        { id: 'E0P3lRI4H7.MYTF1', label: 'TF1+' },
-        { id: 'org.tizen.netflix-app', label: 'Netflix' },
-        { id: 'org.tizen.primevideo', label: 'Prime Video' },
-        { id: 'MCmYXNxgcu.DisneyPlus', label: 'Disney+' },
-        { id: 'com.samsung.tv.aria-video', label: 'Apple TV' }
+        { match: 'youtube', label: 'YouTube', brand: 'youtube' },
+        { match: 'netflix', label: 'Netflix' },
+        { match: 'prime ?video|primevideo', label: 'Prime Video' },
+        { match: 'disney', label: 'Disney+' },
+        { match: 'spotify', label: 'Spotify' },
+        { match: 'fieteflix|lichtspiel', label: 'FieteFlix' }
     ],
 
-    inputs: [
-        { hdmi: 1, label: 'Nintendo Switch 2', brand: 'switch' },
-        { hdmi: 2, label: 'PlayStation 5', brand: 'playstation' },
-        { hdmi: 4, label: 'Xbox Series X', brand: 'xbox' }
-    ],
+    // No consoles row; add { hdmi: 1, label: '…' } entries to show HDMI inputs.
+    inputs: [],
 
     // How an input tile switches the TV. See README "HDMI inputs".
     //   'switch+viewer'  set the TV source, then open Samsung's TV viewer (default)
@@ -42,12 +38,12 @@ window.LAUNCHER_CONFIG = {
      */
     longBackToSamsungHome: { enabled: true, holdMs: 800 },
 
-    locale: 'en-GB',
+    locale: 'de-DE',
 
     theme: {
         // Starting wallpaper (key from js/wallpapers.js), or null for none (plain gradient).
         // Changed from Settings → Background; the TV remembers the choice.
-        wallpaper: null
+        wallpaper: 'forest'
     },
 
     /*
